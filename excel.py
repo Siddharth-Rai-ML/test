@@ -15,7 +15,7 @@ class Excel:
 
     def _cell_formatter(self):
         self.cell_format1 = self._workbook.add_format({'font_color': 'blue'})
-        
+
         self.cell_format2 = self._workbook.add_format()
         self.cell_format2.set_pattern(1)
         self.cell_format2.set_border(1)
@@ -85,7 +85,7 @@ class Excel:
 
     def new_worksheet(self, sheet_name):
         return self._workbook.add_worksheet(sheet_name)
-    
+
     def create_summary_worksheet(self):
         row = 0
         col = 0
@@ -93,33 +93,34 @@ class Excel:
         self.summary_worksheet = self.new_worksheet(constants.SUMMARY_SHEET_NAME)
         self.summary_worksheet.set_column('A:A', 30)
         self.summary_worksheet.set_column('B:B', 30)
-        self.summary_worksheet.set_column('C:C', 25)
+        self.summary_worksheet.set_column('C:C', 20)
         self.summary_worksheet.set_column('D:D', 25)
-        self.summary_worksheet.set_column('E:E', 10)
+        self.summary_worksheet.set_column('E:E', 25)
         self.summary_worksheet.set_column('G:G', 10)
         self.summary_worksheet.set_column('H:H', 10)
         self.summary_worksheet.set_column('I:I', 10)
-        self.summary_worksheet.set_column('J:J', 60)
-        self.summary_worksheet.set_column('K:K', 30)
-        self.summary_worksheet.set_column('L:L', 25)
-        self.summary_worksheet.set_column('M:M', 30)
+        self.summary_worksheet.set_column('J:J', 10)
+        self.summary_worksheet.set_column('K:K', 60)
+        self.summary_worksheet.set_column('L:L', 30)
+        self.summary_worksheet.set_column('M:M', 25)
         self.summary_worksheet.set_column('N:N', 25)
 
         self.summary_worksheet.write(row, col, "Image_Name", self.cell_format2)
         self.summary_worksheet.write(row, col + 1, "Registry", self.cell_format2)
-        self.summary_worksheet.write(row, col + 2, "sha_id", self.cell_format2)
-        self.summary_worksheet.write(row, col + 3, "Tag", self.cell_format2)
-        self.summary_worksheet.write(row, col + 4, "Critical", self.cell_format2)
-        self.summary_worksheet.write(row, col + 5, "High", self.cell_format2)
-        self.summary_worksheet.write(row, col + 6, "Medium", self.cell_format2)
-        self.summary_worksheet.write(row, col + 7, "Low", self.cell_format2)
-        self.summary_worksheet.write(row, col + 8, "Total", self.cell_format2)
-        self.summary_worksheet.write(row, col + 9, "Maintainer", self.cell_format2)
-        self.summary_worksheet.write(row, col + 10, "Application_Name", self.cell_format2)
-        self.summary_worksheet.write(row, col + 11, "Cost_Center", self.cell_format2)
-        self.summary_worksheet.write(row, col + 12, "Email_Distribution", self.cell_format2)
-        self.summary_worksheet.write(row, col + 13, "apm", self.cell_format2)
-        self.summary_worksheet.write(row, col + 14, "bit", self.cell_format2)
+        self.summary_worksheet.write(row, col + 2, "Environment", self.cell_format2)
+        self.summary_worksheet.write(row, col + 3, "sha_id", self.cell_format2)
+        self.summary_worksheet.write(row, col + 4, "Tag", self.cell_format2)
+        self.summary_worksheet.write(row, col + 5, "Critical", self.cell_format2)
+        self.summary_worksheet.write(row, col + 6, "High", self.cell_format2)
+        self.summary_worksheet.write(row, col + 7, "Medium", self.cell_format2)
+        self.summary_worksheet.write(row, col + 8, "Low", self.cell_format2)
+        self.summary_worksheet.write(row, col + 9, "Total", self.cell_format2)
+        self.summary_worksheet.write(row, col + 10, "Maintainer", self.cell_format2)
+        self.summary_worksheet.write(row, col + 11, "Application_Name", self.cell_format2)
+        self.summary_worksheet.write(row, col + 12, "Cost_Center", self.cell_format2)
+        self.summary_worksheet.write(row, col + 13, "Email_Distribution", self.cell_format2)
+        self.summary_worksheet.write(row, col + 14, "apm", self.cell_format2)
+        self.summary_worksheet.write(row, col + 15, "bit", self.cell_format2)
 
     def create_sub_sheet(self, sheet_name):
         vrow = 0
@@ -149,17 +150,13 @@ class Excel:
     def write_to_excel(self, rows):
         log.debug("creating summary sheet")
         self.create_summary_worksheet()
-
         row = 0
         col = 0
-
-        i = 0
         x = 0
         log.debug(f'length of rows: {len(rows)}')
 
         for i, table_row in enumerate(rows):
-            # ID, Registry, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, result, repo, vulnerabilities = table_row
-            ID, Registry, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, maintainer, Application, Cost, Email, APM, BIT, result, repo, vulnerabilities = table_row
+            ID, Registry, Environment, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, maintainer, Application, Cost, Email, APM, BIT, result, repo, vulnerabilities = table_row
             if Critical == 0:
                 self.cell_format6.set_bg_color('white')
             elif Critical > 0:
@@ -183,23 +180,23 @@ class Excel:
             log.debug(f'writing row : {row+1}')
             self.summary_worksheet.write(row + 1, col, ID, self.cell_format1)
             self.summary_worksheet.write(row + 1, col + 1, Registry)
-            self.summary_worksheet.write(row + 1, col + 2, Sha_id)
-            self.summary_worksheet.write(row + 1, col + 3, Tag)
-            self.summary_worksheet.write(row + 1, col + 4, Critical, self.cell_format6)
-            self.summary_worksheet.write(row + 1, col + 5, High, self.cell_format5)
-            self.summary_worksheet.write(row + 1, col + 6, Medium, self.cell_format4)
-            self.summary_worksheet.write(row + 1, col + 7, Low, self.cell_format3)
-            self.summary_worksheet.write(row + 1, col + 8, Total, self.cell_format7)
-            self.summary_worksheet.write(row + 1, col + 9, maintainer)
-            self.summary_worksheet.write(row + 1, col + 10, Application)
-            self.summary_worksheet.write(row + 1, col + 11, Cost)
-            self.summary_worksheet.write(row + 1, col + 12, Email)
-            self.summary_worksheet.write(row + 1, col + 13, APM)
-            self.summary_worksheet.write(row + 1, col + 14, BIT)
+            self.summary_worksheet.write(row + 1, col + 2, Environment)
+            self.summary_worksheet.write(row + 1, col + 3, Sha_id)
+            self.summary_worksheet.write(row + 1, col + 4, Tag)
+            self.summary_worksheet.write(row + 1, col + 5, Critical, self.cell_format6)
+            self.summary_worksheet.write(row + 1, col + 6, High, self.cell_format5)
+            self.summary_worksheet.write(row + 1, col + 7, Medium, self.cell_format4)
+            self.summary_worksheet.write(row + 1, col + 8, Low, self.cell_format3)
+            self.summary_worksheet.write(row + 1, col + 9, Total, self.cell_format7)
+            self.summary_worksheet.write(row + 1, col + 10, maintainer)
+            self.summary_worksheet.write(row + 1, col + 11, Application)
+            self.summary_worksheet.write(row + 1, col + 12, Cost)
+            self.summary_worksheet.write(row + 1, col + 13, Email)
+            self.summary_worksheet.write(row + 1, col + 14, APM)
+            self.summary_worksheet.write(row + 1, col + 15, BIT)
             if result is None:
                 pass
             else:
-                vrow = 0
                 vcol = 0
                 sheet_name = str(ID) + "-" + str(i + 1)
                 sheet_name = str(sheet_name.split("/"))
@@ -216,7 +213,6 @@ class Excel:
                 self.summary_worksheet.set_column('A:A', 60)
                 self.summary_worksheet.write_url(x, 0, f"internal:'{spsheet}'!A1", string=repo)
 
-                vrow = vrow + 1
                 sub_sheet_rows = list()
                 for index, vul in enumerate(vulnerabilities):
                     Severity = vul['severity']
@@ -229,20 +225,22 @@ class Excel:
                     Published_date = vul['published']
                     Published_date = datetime.datetime.fromtimestamp(Published_date)
                     Published_date = Published_date.strftime('%Y-%m-%d')
-                    Fix_date = vul['fixDate']
-                    Fix_date = datetime.datetime.fromtimestamp(Fix_date)
-                    Fix_date = Fix_date.strftime('%Y-%m-%d')
+                    Fix_date = vul.get('fixDate', 'None')
+                    if Fix_date != 'None':
+                        Fix_date = datetime.datetime.fromtimestamp(Fix_date)
+                        Fix_date = Fix_date.strftime('%Y-%m-%d')
 
-                    sub_sheet_rows.append([PackageName, Severity, CveId, Fixstatus, PackageVersion, Discovered_date, Published_date, Fix_date])
-                
-                def sort_sub_sheet(sub_sheet_rows):
+                    sub_sheet_rows.append([PackageName, Severity, CveId, Fixstatus, PackageVersion,
+                                           Discovered_date, Published_date, Fix_date])
+
+                def sort_sub_sheet(sheet_rows):
                     sorted_rows = list()
-                    critical = [row for row in sub_sheet_rows if row[1] == 'critical']
-                    high = [row for row in sub_sheet_rows if row[1] == 'high']
-                    important = [row for row in sub_sheet_rows if row[1] == 'important']
-                    moderate = [row for row in sub_sheet_rows if row[1] == 'moderate']
-                    medium = [row for row in sub_sheet_rows if row[1] == 'medium']
-                    low = [row for row in sub_sheet_rows if row[1] == 'low']
+                    critical = [row for row in sheet_rows if row[1] == 'critical']
+                    high = [row for row in sheet_rows if row[1] == 'high']
+                    important = [row for row in sheet_rows if row[1] == 'important']
+                    moderate = [row for row in sheet_rows if row[1] == 'moderate']
+                    medium = [row for row in sheet_rows if row[1] == 'medium']
+                    low = [row for row in sheet_rows if row[1] == 'low']
                     sorted_rows.extend(critical)
                     sorted_rows.extend(high)
                     sorted_rows.extend(important)
@@ -251,11 +249,11 @@ class Excel:
                     sorted_rows.extend(low)
                     return sorted_rows
 
-                def replace_moderate_with_medium(sub_sheet_rows):
+                def replace_moderate_with_medium(sheet_rows):
                     # consider moderate as medium
                     filtered_rows = list()
-                    moderate = [row for row in sub_sheet_rows if row[1] == 'moderate']
-                    non_moderate = [row for row in sub_sheet_rows if row[1] != 'moderate']
+                    moderate = [row for row in sheet_rows if row[1] == 'moderate']
+                    non_moderate = [row for row in sheet_rows if row[1] != 'moderate']
                     for mod in moderate:
                         mod[1] = 'medium'
                     filtered_rows.extend(moderate)
@@ -263,22 +261,22 @@ class Excel:
                     filtered_rows.extend(non_moderate)
                     return filtered_rows
 
-                def replace_important_as_high(sub_sheet_rows):
+                def replace_important_as_high(sheet_rows):
                     # consider important as high
                     filtered_rows = list()
-                    important = [row for row in sub_sheet_rows if row[1] == 'important']
-                    non_important = [row for row in sub_sheet_rows if row[1] != 'important']
+                    important = [row for row in sheet_rows if row[1] == 'important']
+                    non_important = [row for row in sheet_rows if row[1] != 'important']
                     for imp in important:
                         imp[1] = 'high'
                     filtered_rows.extend(important)
                     filtered_rows.extend(non_important)
                     return filtered_rows
 
-                def move_blanks_to_bottom(rows, key_position):
+                def move_blanks_to_bottom(sheet_rows, key_position):
                     sorted_rows = list()
                     empty_rows = list()
                     non_empty_rows = list()
-                    for row in rows:
+                    for row in sheet_rows:
                         if row[key_position]:
                             non_empty_rows.append(row)
                         else:
@@ -288,7 +286,6 @@ class Excel:
                     return sorted_rows
 
                 vrow = 1
-
 
                 log.debug(f"total sub rows: {len(sub_sheet_rows)}")
 
@@ -311,7 +308,6 @@ class Excel:
                         f = self.cell_format_3
                     elif str(Severity) == 'critical':
                         f = self.cell_format_4
-                    
 
                     print(f'writing sub row : {vrow + index}/{len(sub_sheet_rows)}, severity = {Severity}, {f.bg_color}')
                     sworksheet.write(vrow + index, vcol + 0, PackageName)
