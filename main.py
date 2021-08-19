@@ -76,11 +76,6 @@ def get_all_high_low_critical_findings_for_registries():
                     Sha_id = vuln_data[index].get('topLayer') # using get as value is not always present 
                     Tag = vuln_data[index]['repoTag']['tag']
                     Distro = vuln_data[index]['distro']
-                    Critical = vuln_data[index]['vulnerabilityDistribution']['critical']
-                    High = vuln_data[index]['vulnerabilityDistribution']['high']
-                    Medium = vuln_data[index]['vulnerabilityDistribution']['medium']
-                    Low = vuln_data[index]['vulnerabilityDistribution']['low']
-                    Total = vuln_data[index]['vulnerabilityDistribution']['total']
                     instructions = get_instructions_from_history(vuln_data[index]['history'])
                     maintainer = instructions.get('LABEL maintainer', "None")
                     Application = instructions.get('LABEL applicationname', "None")
@@ -92,8 +87,20 @@ def get_all_high_low_critical_findings_for_registries():
                     result = vuln_data[index]['vulnerabilities']
                     repo = vuln_data[index]['repoTag']['repo']
                     vulnerabilities = vuln_data[index]['vulnerabilities']
+                    if vulnerabilities:
+                        # calculate count only if status of the issue is available
+                        Critical = len(list(filter(lambda x: x.get('status') and x.get('severity') == 'critical', vulnerabilities)))
+                        High = len(list(filter(lambda x: x.get('status') and x.get('severity') == 'high', vulnerabilities)))
+                        Medium = len(list(filter(lambda x: x.get('status') and x.get('severity') == 'medium', vulnerabilities)))
+                        Low = len(list(filter(lambda x: x.get('status') and x.get('severity') == 'low', vulnerabilities)))
+                    else:
+                        Critical = vuln_data[index]['vulnerabilityDistribution']['critical']
+                        High = vuln_data[index]['vulnerabilityDistribution']['high']
+                        Medium = vuln_data[index]['vulnerabilityDistribution']['medium']
+                        Low = vuln_data[index]['vulnerabilityDistribution']['low']
 
-                    # row = [ID, Registry, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, result, repo, vulnerabilities]
+                    Total = Critical + High + Medium + Low
+
                     row = [ID, Registry, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, maintainer, Application, Cost, Email, APM, BIT, result, repo, vulnerabilities]
                     collection_rows.append(row)
                     print(f'appended row - {len(collection_rows)}')
