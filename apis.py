@@ -96,10 +96,7 @@ class API:
         resp_list.sort()
         offset = 0
 
-        ###########################################
-        #while True:
-        for i in range(1):
-        ###########################################
+        while True:
             response = get(url + "?limit=50&offset={}".format(offset), headers=cust_headers, verify=False)
             offset += 50
             log.debug(f"offset - {offset}")
