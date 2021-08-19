@@ -9,13 +9,13 @@ from apis import api
 from excel import Excel
 
 
-
 def get_vuln_data():
     vuln_data = api.get_registries()
     # print('Vuln_data : ', vuln_data)
     if vuln_data == 'REGISTRY_NOT_FOUND':
         raise ValueError("REGISTRY_NOT_FOUND")
     return vuln_data
+
 
 def get_instructions_from_history(history):
     instructions = dict()
@@ -50,7 +50,13 @@ def filename_for_collection(collection_name):
     return filename
 
 
-# def row_from_collection()
+def environment_from_clusters(clusters):
+    for cluster in clusters:
+        if 'prod' in cluster.lower():
+            if 'non' in cluster.lower():
+                return 'Non-Prod'
+            return 'Prod'
+    return 'None'
 
 
 def get_all_high_low_critical_findings_for_registries():
@@ -76,6 +82,11 @@ def get_all_high_low_critical_findings_for_registries():
                     Sha_id = vuln_data[index].get('topLayer') # using get as value is not always present 
                     Tag = vuln_data[index]['repoTag']['tag']
                     Distro = vuln_data[index]['distro']
+                    repo = vuln_data[index]['repoTag']['repo']
+
+                    clusters = vuln_data[index]['clusters']
+                    Environment = environment_from_clusters(clusters)
+                    
                     instructions = get_instructions_from_history(vuln_data[index]['history'])
                     maintainer = instructions.get('LABEL maintainer', "None")
                     Application = instructions.get('LABEL applicationname', "None")
@@ -84,8 +95,9 @@ def get_all_high_low_critical_findings_for_registries():
                     AppID = instructions.get('LABEL applicationid', "None")
                     APM = instructions.get('LABEL apm', "None")
                     BIT = instructions.get('LABEL bit', "None")
+
                     result = vuln_data[index]['vulnerabilities']
-                    repo = vuln_data[index]['repoTag']['repo']
+
                     vulnerabilities = vuln_data[index]['vulnerabilities']
                     if vulnerabilities:
                         # calculate count only if status of the issue is available
@@ -101,7 +113,7 @@ def get_all_high_low_critical_findings_for_registries():
 
                     Total = Critical + High + Medium + Low
 
-                    row = [ID, Registry, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, maintainer, Application, Cost, Email, APM, BIT, result, repo, vulnerabilities]
+                    row = [ID, Registry, Environment, Sha_id, Tag, Distro, Critical, High, Medium, Low, Total, maintainer, Application, Cost, Email, APM, BIT, result, repo, vulnerabilities]
                     collection_rows.append(row)
                     print(f'appended row - {len(collection_rows)}')
             excel.write_to_excel(collection_rows)
