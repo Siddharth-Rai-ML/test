@@ -47,13 +47,41 @@ class Excel:
         self.cell_format6.set_pattern(1)
         self.cell_format6.set_border(1)
         self.cell_format6.set_align('center')
-        self.cell_format6.set_font_color('black')
+        self.cell_format6.set_font_color('white')
 
-        self.cell_formats = self._workbook.add_format()
-        self.cell_formats.set_align('center')
-        self.cell_formats.set_border(1)
-        self.cell_formats.set_font_color('black')
-        self.cell_formats.set_bold()
+        self.cell_format7 = self._workbook.add_format()
+        self.cell_format7.set_pattern(1)
+        self.cell_format7.set_border(1)
+        self.cell_format7.set_align('center')
+        self.cell_format7.set_bg_color('white')
+
+        self.cell_format_1 = self._workbook.add_format()
+        self.cell_format_1.set_align('center')
+        self.cell_format_1.set_border(1)
+        self.cell_format_1.set_bg_color('green')
+        self.cell_format_1.set_font_color('black')
+        self.cell_format_1.set_bold()
+
+        self.cell_format_2 = self._workbook.add_format()
+        self.cell_format_2.set_align('center')
+        self.cell_format_2.set_border(1)
+        self.cell_format_2.set_bg_color('orange')
+        self.cell_format_2.set_font_color('black')
+        self.cell_format_2.set_bold()
+
+        self.cell_format_3 = self._workbook.add_format()
+        self.cell_format_3.set_align('center')
+        self.cell_format_3.set_border(1)
+        self.cell_format_3.set_bg_color('red')
+        self.cell_format_3.set_font_color('black')
+        self.cell_format_3.set_bold()
+
+        self.cell_format_4 = self._workbook.add_format()
+        self.cell_format_4.set_align('center')
+        self.cell_format_4.set_border(1)
+        self.cell_format_4.set_bg_color('brown')
+        self.cell_format_4.set_font_color('white')
+        self.cell_format_4.set_bold()
 
     def new_worksheet(self, sheet_name):
         return self._workbook.add_worksheet(sheet_name)
@@ -135,7 +163,7 @@ class Excel:
             if Critical == 0:
                 self.cell_format6.set_bg_color('white')
             elif Critical > 0:
-                self.cell_format6.set_bg_color('red')
+                self.cell_format6.set_bg_color('brown')
 
             if High == 0:
                 self.cell_format5.set_bg_color('white')
@@ -150,7 +178,7 @@ class Excel:
             if Low == 0:
                 self.cell_format3.set_bg_color('white')
             elif Low > 0:
-                self.cell_format3.set_bg_color('yellow')
+                self.cell_format3.set_bg_color('green')
 
             log.debug(f'writing row : {row+1}')
             self.summary_worksheet.write(row + 1, col, ID, self.cell_format1)
@@ -161,7 +189,7 @@ class Excel:
             self.summary_worksheet.write(row + 1, col + 5, High, self.cell_format5)
             self.summary_worksheet.write(row + 1, col + 6, Medium, self.cell_format4)
             self.summary_worksheet.write(row + 1, col + 7, Low, self.cell_format3)
-            self.summary_worksheet.write(row + 1, col + 8, Total)
+            self.summary_worksheet.write(row + 1, col + 8, Total, self.cell_format7)
             self.summary_worksheet.write(row + 1, col + 9, maintainer)
             self.summary_worksheet.write(row + 1, col + 10, Application)
             self.summary_worksheet.write(row + 1, col + 11, Cost)
@@ -243,22 +271,22 @@ class Excel:
                 for index, sub_sheet_row in enumerate(move_blanks_to_bottom(sort_sub_sheet(sub_sheet_rows), 3)):
                     PackageName, Severity, CveId, Fixstatus, PackageVersion, Discovered_date, Published_date, Fix_date = sub_sheet_row
                     if str(Severity) == 'low':
-                        self.cell_formats.set_bg_color('green')
+                        f = self.cell_format_1
                     elif str(Severity) == 'medium':
-                        self.cell_formats.set_bg_color('yellow')
+                        f = self.cell_format_2
                     elif str(Severity) == 'moderate':
-                        self.cell_formats.set_bg_color('orange')
+                        f = self.cell_format_2
                     elif str(Severity) == 'important':
-                        self.cell_formats.set_bg_color('orange')
+                        f = self.cell_format_3
                     elif str(Severity) == 'high':
-                        self.cell_formats.set_bg_color('red')
+                        f = self.cell_format_3
                     elif str(Severity) == 'critical':
-                        self.cell_formats.set_bg_color('red')
+                        f = self.cell_format_4
                     
 
-                    print(f'writing sub row : {vrow + index}/{len(sub_sheet_rows)}, severity = {Severity}, {self.cell_formats.bg_color}')
+                    print(f'writing sub row : {vrow + index}/{len(sub_sheet_rows)}, severity = {Severity}, {f.bg_color}')
                     sworksheet.write(vrow + index, vcol + 0, PackageName)
-                    sworksheet.write(vrow + index, vcol + 1, Severity, self.cell_formats)
+                    sworksheet.write(vrow + index, vcol + 1, Severity, f)
                     sworksheet.write(vrow + index, vcol + 2, CveId)
                     sworksheet.write(vrow + index, vcol + 3, Fixstatus)
                     sworksheet.write(vrow + index, vcol + 4, Distro)
