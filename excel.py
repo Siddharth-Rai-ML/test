@@ -251,10 +251,33 @@ class Excel:
                     sorted_rows.extend(low)
                     return sorted_rows
 
+                def replace_moderate_with_medium(sub_sheet_rows):
+                    # consider moderate as medium
+                    filtered_rows = list()
+                    moderate = [row for row in sub_sheet_rows if row[1] == 'moderate']
+                    non_moderate = [row for row in sub_sheet_rows if row[1] != 'moderate']
+                    for mod in moderate:
+                        mod[1] = 'medium'
+                    filtered_rows.extend(moderate)
+
+                    filtered_rows.extend(non_moderate)
+                    return filtered_rows
+
+                def replace_important_as_high(sub_sheet_rows):
+                    # consider important as high
+                    filtered_rows = list()
+                    important = [row for row in sub_sheet_rows if row[1] == 'important']
+                    non_important = [row for row in sub_sheet_rows if row[1] != 'important']
+                    for imp in important:
+                        imp[1] = 'high'
+                    filtered_rows.extend(important)
+                    filtered_rows.extend(non_important)
+                    return filtered_rows
+
                 def move_blanks_to_bottom(rows, key_position):
                     sorted_rows = list()
                     empty_rows = list()
-                    non_empty_rows =list()
+                    non_empty_rows = list()
                     for row in rows:
                         if row[key_position]:
                             non_empty_rows.append(row)
@@ -268,7 +291,13 @@ class Excel:
 
 
                 log.debug(f"total sub rows: {len(sub_sheet_rows)}")
-                for index, sub_sheet_row in enumerate(move_blanks_to_bottom(sort_sub_sheet(sub_sheet_rows), 3)):
+
+                sub_sheet_rows = replace_moderate_with_medium(sub_sheet_rows)
+                sub_sheet_rows = replace_important_as_high(sub_sheet_rows)
+                sub_sheet_rows = sort_sub_sheet(sub_sheet_rows)
+                sub_sheet_rows = move_blanks_to_bottom(sub_sheet_rows, 3)
+
+                for index, sub_sheet_row in enumerate(sub_sheet_rows):
                     PackageName, Severity, CveId, Fixstatus, PackageVersion, Discovered_date, Published_date, Fix_date = sub_sheet_row
                     if str(Severity) == 'low':
                         f = self.cell_format_1
